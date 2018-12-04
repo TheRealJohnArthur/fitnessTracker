@@ -48,8 +48,9 @@
         color="primary">
         I agree to the <a>Terms & Conditions</a>
       </mat-checkbox>
-    <button mat-raised-button color="primary" type="submit" [disabled]="f.invalid">
+    <button *ngIf="!loading" mat-raised-button color="primary" type="submit" [disabled]="f.invalid">
       Register
     </button>
+    <mat-spinner *ngIf="loading"></mat-spinner>
   </form>
 </section>

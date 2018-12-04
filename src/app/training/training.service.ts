@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Subscription } from 'rxjs';
+import { UIService } from "../shared/ui.service";
 
 @Injectable()
 export class TrainingService {
@@ -15,15 +16,18 @@ export class TrainingService {
   private firebaseSubscription: Subscription[] = [];
 
   constructor(
-    private db: AngularFirestore
+    private db: AngularFirestore,
+    private uiService: UIService
   ) { }
 
   fetchExercises() {
+    this.uiService.loadingState.next(true);
     this.firebaseSubscription.push(this.db
       .collection('availableExercises')
       .snapshotChanges()
       .pipe(
         map(docArray => {
+          // throw(new Error('Error getting the list of exercises from server.'));
           return docArray.map(doc => {
             return {
               id: doc.payload.doc.id,
@@ -31,10 +35,13 @@ export class TrainingService {
             };
           });
         })).subscribe((result: Exercise[]) => {
+          this.uiService.loadingState.next(false);
           this.availableExercises = result;
           this.emitExercises.next([...this.availableExercises]);
         }, error => {
-          console.log(error);
+          this.uiService.loadingState.next(false);
+          this.uiService.showSnackBar(error.message, null, 3000);
+          this.emitExercises.next(null);
         }));
   }
 
@@ -73,7 +80,7 @@ export class TrainingService {
       .subscribe((result: Exercise[]) => {
         this.emitExercisesHistory.next(result);
       }, error => {
-        console.log(error);
+        this.uiService.showSnackBar(error.message, null, 3000);
       }));
   }
 
