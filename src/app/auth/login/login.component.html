@@ -23,7 +23,7 @@
       <mat-hint>Please enter your login password.</mat-hint>
       <mat-error>Field cannot be blank.</mat-error>
     </mat-form-field>
-    <button *ngIf="!loading" type="submit" mat-raised-button color="primary" [disabled]="loginForm.invalid">Login</button>
-    <mat-spinner *ngIf="loading"></mat-spinner>
+    <button *ngIf="!(loading$ | async)" type="submit" mat-raised-button color="primary" [disabled]="loginForm.invalid">Login</button>
+    <mat-spinner *ngIf="loading$ | async"></mat-spinner>
   </form>
 </section>
